@@ -2,19 +2,15 @@ from django.shortcuts import render
 from django.http import HttpResponse
 
 def index(request):
-    return HttpResponse("""
-<html>
-<h1>Rango says hey there partner!</h1>
-<body>
-<p>click <a href='http://127.0.0.1:8000/rango/about/'>here</a> to visit the about page.</p>
-</body></html>
-""")
+   #create dict to pass to template engine as context.
+   context_dict = {'boldmessage': 'Crunchy, creamy, cookie, candy, cupcake!'}
+   #make use of shortcut func. to return rendered response to client.
+   #first parameter is the template.
+   return render(request, 'rango/index.html', context=context_dict)
 
 def about(request):
-    return HttpResponse("""
-<html>
-<body>
-<h1>About!</h1>
-<p>click <a href='http://127.0.0.1:8000/'>here</a> to visit the index page.</p>
-</body></html>
-""")
+    #create dict to pass to template engine as context.
+    context_dict = {'boldmessage': 'This tutorial has been put together by mel'}
+    #make use of shortcut func. to return rendered response to client.
+    #first parameter is the template.
+    return render(request, 'rango/about.html', context=context_dict)
