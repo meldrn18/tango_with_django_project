@@ -35,8 +35,8 @@ def visitor_cookie_handler(request):
    #get no. of visits to site
    #use COOOKIES.get() to obtain visits cookies
    #if cookie exists, val casted to an int, if not default val 1 used
-   visits = int(request.COOKIES.get('visits', '1'))
-   last_visit_cookie =request.COOKIES.get('last_visit', str(datetime.now()))
+   visits = int(get_server_side_cookie(request, 'visits', '1'))
+   last_visit_cookie = get_server_side_cookie(request, 'last_visit', str(datetime.now()))
    last_visit_time = datetime.strptime(last_visit_cookie, '%Y-%m-%d %H:%M:%S.%f')
 
    #if its been more than a day since last visit
