@@ -4,7 +4,8 @@ from rango.models import Category, Page
 from rango.forms import CategoryForm, PageForm, UserForm, UserProfileForm
 from django.shortcuts import redirect
 from django.urls import reverse
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 
 
 def index(request):
@@ -178,4 +179,15 @@ def user_login(request):
    else:
       #no context  variables to pass the template system, hence blank dic. obj.
       return render(request, 'rango/login.html')
+
+@login_required
+def restricted(request):
+   return render(request, 'rango/restricted.html')
+
+#login_required() decorator ensures only those logged in can access this view
+@login_required
+def user_logout(request):
+   logout(request)
+   #return to homepage
+   return redirect(reverse('rango:index'))
 
