@@ -26,6 +26,8 @@
     <a href="/rango/category/{{category.slug }}/add_page/">Add Page</a> <br/>
     {% else %}
         Only logged in users can add pages.
+        <a href="{% url 'rango:index' %}">Return to the homepage.</a><br />
+
     {% endif %}
     {% else %}
         The specified category does not exist.

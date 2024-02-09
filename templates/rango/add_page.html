@@ -5,6 +5,7 @@
 	Add a Page
 {% endblock %}
 {% block body_block %}
+    {% if user.is_authenticated %}
         <h1>Add a Page to {{ category.name }}</h1>
         <div>
             <form id="page_form" method="post" action="{% url 'rango:add_page' category.slug %}">
@@ -20,4 +21,7 @@
                 <input type="submit" name="submit" value="Add Page" />
             </form>
         </div>
+    {% else %}
+    <a href="{% url 'rango:index' %}">Return to the homepage.</a><br />
+    {% endif %}
 {% endblock %}

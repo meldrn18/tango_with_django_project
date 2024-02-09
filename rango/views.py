@@ -6,6 +6,7 @@ from django.shortcuts import redirect
 from django.urls import reverse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from datetime import datetime
 
 
 def index(request):
@@ -19,13 +20,42 @@ def index(request):
    context_dict['boldmessage']= 'Crunchy, creamy, cookie, candy, cupcake!'
    context_dict['categories'] = category_list
    context_dict['pages'] = page_list
-   #make use of shortcut func. to return rendered response to client.
-   #first parameter is the template.
+
+   visitor_cookie_handler(request)
+   #obtain response obj. early so we can add cookie info
    return render(request, 'rango/index.html', context=context_dict)
+
+def get_server_side_cookie(request, cookie, default_val=None):
+   val = request.session.get(cookie)
+   if not val:
+      val = default_val
+   return val
+
+def visitor_cookie_handler(request):
+   #get no. of visits to site
+   #use COOOKIES.get() to obtain visits cookies
+   #if cookie exists, val casted to an int, if not default val 1 used
+   visits = int(request.COOKIES.get('visits', '1'))
+   last_visit_cookie =request.COOKIES.get('last_visit', str(datetime.now()))
+   last_visit_time = datetime.strptime(last_visit_cookie, '%Y-%m-%d %H:%M:%S.%f')
+
+   #if its been more than a day since last visit
+   if (datetime.now() - last_visit_time).days >0:
+      visits = visits+1
+      #update last visit cookie now we have updated count
+      request.session['last_visit'] = str(datetime.now())
+   else:
+      #set last visit cookie
+      request.session['last_visit'] = last_visit_cookie
+   #update/set visits cookie
+   request.session['visits'] = visits
 
 def about(request):
     #create dict to pass to template engine as context.
-    context_dict = {'boldmessage': 'This tutorial has been put together by mel'}
+    context_dict = {}
+    visitor_cookie_handler(request)
+    context_dict['visits'] = request.session['visits']
+
     #make use of shortcut func. to return rendered response to client.
     #first parameter is the template.
     return render(request, 'rango/about.html', context=context_dict)
@@ -54,6 +84,7 @@ def show_category(request, category_name_slug):
       context_dict['pages']=None 
    return render(request, 'rango/category.html', context=context_dict)
 
+@login_required
 def add_category(request):
    form=CategoryForm()
 
@@ -75,6 +106,7 @@ def add_category(request):
    #render form with error messages if any
    return render(request, 'rango/add_category.html', {'form':form})
 
+@login_required
 def add_page(request, category_name_slug):
    try:
       category=Category.objects.get(slug=category_name_slug)
@@ -84,6 +116,8 @@ def add_page(request, category_name_slug):
    #you cannot add a page to a category that doesnt exist
    if category is None:
       return redirect('/rango/')
+
+
 
    form = PageForm()
 
